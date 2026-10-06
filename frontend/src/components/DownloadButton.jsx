@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Download, LoaderCircle } from 'lucide-react';
 import { downloadDocument } from '../services/api.js';
 
-export default function DownloadButton({ documentId, fileName }) {
+export default function DownloadButton({ owner, documentId, fileName }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState('');
 
@@ -12,7 +12,7 @@ export default function DownloadButton({ documentId, fileName }) {
     setError('');
 
     try {
-      const blob = await downloadDocument(documentId);
+      const blob = await downloadDocument(documentId, { owner });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

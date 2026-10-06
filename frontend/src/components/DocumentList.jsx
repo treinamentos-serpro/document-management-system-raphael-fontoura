@@ -19,7 +19,7 @@ function formatSize(size) {
   return `${(size / 1024 ** 2).toFixed(1)} MB`;
 }
 
-export default function DocumentList({ documents, isLoading, error, onRefresh }) {
+export default function DocumentList({ owner, documents, isLoading, error, onRefresh }) {
   return (
     <section className="documents-section" aria-labelledby="documents-title" aria-busy={isLoading}>
       <div className="section-heading">
@@ -57,7 +57,7 @@ export default function DocumentList({ documents, isLoading, error, onRefresh })
                     <td><div className="document-name"><FileText size={18} aria-hidden="true" /><span>{fileName}</span></div></td>
                     <td>{formatSize(document.size)}</td>
                     <td>{formatDate(document.createdAt)}</td>
-                    <td><DownloadButton documentId={document.id} fileName={fileName} /></td>
+                    <td><DownloadButton owner={owner} documentId={document.id} fileName={fileName} /></td>
                   </tr>
                 );
               })}

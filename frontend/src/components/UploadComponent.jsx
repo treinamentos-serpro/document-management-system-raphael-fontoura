@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { LoaderCircle, Upload } from 'lucide-react';
 import { uploadDocument } from '../services/api.js';
 
-export default function UploadComponent({ onUpload }) {
+export default function UploadComponent({ owner, onUpload }) {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
@@ -18,7 +18,7 @@ export default function UploadComponent({ onUpload }) {
     setSuccess('');
 
     try {
-      await uploadDocument(file);
+      await uploadDocument(file, { owner });
       form.reset();
       setFile(null);
       setSuccess('Documento enviado com sucesso.');

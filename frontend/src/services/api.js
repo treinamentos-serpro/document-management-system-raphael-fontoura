@@ -1,17 +1,20 @@
 const API_PREFIX = '/api';
 
-async function request(path, options = {}) {
+async function request(path, { owner, ...options } = {}) {
   let response;
 
   try {
-    response = await fetch(`${API_PREFIX}${path}`, options);
+    response = await fetch(`${API_PREFIX}${path}`, {
+      ...options,
+      ...(owner ? { headers: { 'X-User-Id': owner } } : {}),
+    });
   } catch {
     throw new Error('Nao foi possivel conectar ao servidor.');
   }
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null);
-    const message = payload?.message || payload?.error;
+    const message = payload?.message || payload?.error?.message || payload?.error;
     throw new Error(
       typeof message === 'string'
         ? message
@@ -22,8 +25,8 @@ async function request(path, options = {}) {
   return response;
 }
 
-export async function listDocuments({ signal } = {}) {
-  const response = await request('/documents', { signal });
+export async function listDocuments({ owner, signal } = {}) {
+  const response = await request('/documents', { owner, signal });
   const documents = await response.json();
 
   if (!Array.isArray(documents)) {
@@ -33,13 +36,13 @@ export async function listDocuments({ signal } = {}) {
   return documents;
 }
 
-export async function uploadDocument(file) {
+export async function uploadDocument(file, { owner } = {}) {
   const body = new FormData();
   body.append('file', file);
-  await request('/upload', { method: 'POST', body });
+  await request('/upload', { method: 'POST', body, owner });
 }
 
-export async function downloadDocument(id) {
-  const response = await request(`/documents/${encodeURIComponent(id)}/download`);
+export async function downloadDocument(id, { owner } = {}) {
+  const response = await request(`/documents/${encodeURIComponent(id)}/download`, { owner });
   return response.blob();
 }

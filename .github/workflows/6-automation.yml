@@ -122,7 +122,16 @@ jobs:
           file: ${{ env.REVIEW_FILE }}
 
       - name: Disable current workflow
-        run: gh workflow disable "6-automation.yml"
+        run: |
+          workflow_state=$(gh workflow view "6-automation.yml" --json state --jq '.state')
+          if [ "$workflow_state" = "active" ]; then
+            gh workflow disable "6-automation.yml"
+          elif [[ "$workflow_state" == disabled_* ]]; then
+            echo "Workflow is already disabled ($workflow_state)."
+          else
+            echo "Unexpected workflow state: $workflow_state"
+            exit 1
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

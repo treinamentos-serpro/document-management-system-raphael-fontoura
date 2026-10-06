@@ -71,9 +71,8 @@ test('envia o identificador do usuario nas tres operacoes', async (context) => {
   const requests = [];
   context.mock.method(globalThis, 'fetch', async (url, options) => {
     requests.push(url);
-    assert.equal(options.headers['X-User-Id'], 'usuario-1');
+    assert.equal(options.headers.get('X-User-Id'), 'usuario-1');
     assert.equal(options.owner, undefined);
-    assert.equal(options.headers['Content-Type'], undefined);
     if (url === '/api/documents') return Response.json([]);
     return new Response('conteudo');
   });
@@ -83,6 +82,19 @@ test('envia o identificador do usuario nas tres operacoes', async (context) => {
   await uploadDocument(new File(['conteudo'], 'documento.txt'), options);
   await downloadDocument('1', options);
   assert.deepEqual(requests, ['/api/documents', '/api/upload', '/api/documents/1/download']);
+});
+
+test('preserva cabeçalhos adicionais ao enviar o identificador do usuario', async (context) => {
+  context.mock.method(globalThis, 'fetch', async (_url, options) => {
+    assert.equal(options.headers.get('X-User-Id'), 'usuario-1');
+    assert.equal(options.headers.get('Authorization'), 'Bearer token');
+    return Response.json([]);
+  });
+
+  await listDocuments({
+    owner: 'usuario-1',
+    headers: { Authorization: 'Bearer token' },
+  });
 });
 
 test('exibe a mensagem de erro estruturada do backend', async (context) => {

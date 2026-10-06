@@ -47,7 +47,7 @@ function createDocumentController(service) {
     }
 
     return response.download(document.filePath, document.originalName, (error) => {
-      if (error && !response.headersSent) {
+      if (error) {
         next(error);
       }
     });

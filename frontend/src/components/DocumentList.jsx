@@ -56,7 +56,7 @@ export default function DocumentList({ owner, documents, isLoading, error, onRef
                   <tr key={document.id}>
                     <td><div className="document-name"><FileText size={18} aria-hidden="true" /><span>{fileName}</span></div></td>
                     <td>{formatSize(document.size)}</td>
-                    <td>{formatDate(document.createdAt)}</td>
+                    <td>{formatDate(document.uploadedAt)}</td>
                     <td><DownloadButton owner={owner} documentId={document.id} fileName={fileName} /></td>
                   </tr>
                 );

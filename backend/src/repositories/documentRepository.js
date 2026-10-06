@@ -31,7 +31,27 @@ function createDocumentRepository({ storageDir }) {
   }
 
   function getFilePath(storageName) {
-    return path.join(storageDir, storageName);
+    if (
+      typeof storageName !== 'string'
+      || storageName.length === 0
+      || storageName === '.'
+      || storageName === '..'
+      || path.basename(storageName) !== storageName
+    ) {
+      throw new Error('Nome de armazenamento inválido.');
+    }
+
+    const filePath = path.resolve(storageDir, storageName);
+    const relativePath = path.relative(storageDir, filePath);
+    if (
+      relativePath === '..'
+      || relativePath.startsWith(`..${path.sep}`)
+      || path.isAbsolute(relativePath)
+    ) {
+      throw new Error('Caminho de armazenamento inválido.');
+    }
+
+    return filePath;
   }
 
   return { save, findById, findByOwner, removeFile, getFilePath };
